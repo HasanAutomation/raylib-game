@@ -44,7 +44,7 @@ int main()
 
         if (collision_with_an_axe)
         {
-            DrawText("Game Over!", 360, 100, 23, RED);
+            DrawText("Game Over!", 280, 100, 23, RED);
         }
         else
         {
