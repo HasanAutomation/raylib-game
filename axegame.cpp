@@ -4,19 +4,36 @@
 using namespace std;
 int main()
 {
-    int width{1350};
-    int height{800};
+    int width{720};
+    int height{480};
 
     // Circle coordinates
-    int circle_x{675};
-    int circle_y{400};
-    int radius{100};
+    int radius{25};
+    int circle_x{720 - radius};
+    int circle_y{200};
+
+    // Circle edges
+    int l_circle_x{circle_x - radius};
+    int r_circle_x{circle_x + radius};
+    int u_circle_y{circle_y - radius};
+    int b_circle_y{circle_y + radius};
 
     // Values for rectangle
     int pos_x{300};
     int pos_y{0};
-    int rec_width{50};
-    int rec_height{50};
+    int axe_length{50};
+    int direction{10};
+    // axe edges
+    int l_axe_x{pos_x};
+    int r_axe_x{pos_x + axe_length};
+    int u_axe_y{pos_y};
+    int b_axe_y{pos_y + axe_length};
+
+    // collision
+    bool collision_with_an_axe = (b_axe_y >= u_circle_y) &&
+                                 (u_axe_y <= b_circle_y) &&
+                                 (l_axe_x <= r_circle_x) &&
+                                 (r_axe_x >= l_circle_x);
 
     InitWindow(width, height, "Axe Master");
     SetTargetFPS(60);
@@ -24,23 +41,52 @@ int main()
     {
         BeginDrawing();
         ClearBackground(WHITE);
-        // Game logic begins
-        DrawCircle(circle_x, circle_y, radius, BLUE);
-        DrawRectangle(pos_x, pos_y, rec_width, rec_height, RED);
 
-        // Move the axe
-        if (pos_y < 800)
-            pos_y += 10;
-        if (IsKeyDown(KEY_D) && circle_x < 1350)
+        if (collision_with_an_axe)
         {
-            circle_x = circle_x + 10;
+            DrawText("Game Over!", 360, 100, 23, RED);
         }
-        if (IsKeyDown(KEY_A) && circle_x > 0)
+        else
         {
-            circle_x = circle_x - 10;
-        }
 
-        // Game logic ends
+            // Update the edges
+            l_circle_x = circle_x - radius;
+            r_circle_x = circle_x + radius;
+            u_circle_y = circle_y - radius;
+            b_circle_y = circle_y + radius;
+
+            l_axe_x = pos_x;
+            r_axe_x = pos_x + axe_length;
+            u_axe_y = pos_y;
+            b_axe_y = pos_y + axe_length;
+
+            // Update collision
+            collision_with_an_axe = (b_axe_y >= u_circle_y) &&
+                                    (u_axe_y <= b_circle_y) &&
+                                    (l_axe_x <= r_circle_x) &&
+                                    (r_axe_x >= l_circle_x);
+
+            // Game logic begins
+            DrawCircle(circle_x, circle_y, radius, BLUE);
+            DrawRectangle(pos_x, pos_y, axe_length, axe_length, RED);
+
+            // Move the axe
+            pos_y += direction;
+            if (pos_y > height || pos_y < 0)
+            {
+                direction = -direction;
+            }
+            if (IsKeyDown(KEY_D) && (circle_x + radius) < width)
+            {
+                circle_x = circle_x + 10;
+            }
+            if (IsKeyDown(KEY_A) && (circle_x - radius) > 0)
+            {
+                circle_x = circle_x - 10;
+            }
+
+            // Game logic ends
+        }
         EndDrawing();
     }
 }
